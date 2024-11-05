@@ -12,13 +12,17 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/login", { email, password });
-      localStorage.setItem("token", response.data.token);
-      window.location.href = "/";
+        const response = await axios.post("/login", { email, password });
+        console.log('Response:', response); // Log the response
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("userEmail", email); // Store user email as well
+        window.location.href = "/";
     } catch (err) {
-      setError(err.response?.data?.message || "Une erreur s'est produite");
+        console.error('Error:', err); // Log the error
+        setError(err.response?.data?.message || "Une erreur s'est produite");
     }
-  };
+};
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-200">

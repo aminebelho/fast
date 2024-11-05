@@ -4,7 +4,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
     <head>
-      <title>Mon Tableau de Bord de Tâches</title>
+      <title>Test Fast Delivery</title>
     </head>
     <body>{children}</body>
   </html>
