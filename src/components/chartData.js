@@ -1,39 +1,60 @@
-"use client"
+"use client";
 
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
-
+import { useEffect, useState } from 'react';
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
-  ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
+} from "@/components/ui/chart";
+import axios from "../lib/axios";
 
-const chartData = [
-  { month: "January", tasks: 6},
-  { month: "February", tasks: 5 },
-  { month: "March", tasks: 7 },
-  { month: "April", tasks:  4},
-  { month: "May", tasks: 9 },
-  { month: "June", tasks: 4 },
-  { month: "July", tasks: 4 },
-  { month: "August", tasks: 4 },
-  { month: "September", tasks: 4 },
-  { month: "October", tasks: 4 },
-  { month: "November", tasks: 4 },
-  { month: "December", tasks: 4 },
-]
 
 const chartConfig = {
   tasks: {
     label: "Nombre de tâches",
     color: "#2563eb",
   }
-} 
+};
 
 export default function ChartData() {
+  const [chartData, setChartData] = useState([]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetchChartData(token);
+    }
+  }, []);
+
+  const fetchChartData = async (token) => {
+    try {
+      const response = await axios.get("/tasks", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const tasks = response.data;
+      
+      // Transform tasks data to get the count of tasks per month
+      const monthlyData = Array(12).fill(0).map((_, i) => ({
+        month: new Date(0, i).toLocaleString('en', { month: 'long' }), // Get month name
+        tasks: 0,
+      }));
+
+      tasks.forEach(task => {
+        const month = new Date(task.due_date).getMonth(); // Use `due_date` as the date field
+        monthlyData[month].tasks += 1; // Increment task count for the month
+      });
+      
+
+      setChartData(monthlyData);
+    } catch (error) {
+      console.error("Failed to fetch tasks data:", error);
+    }
+  };
+
   return (
     <ChartContainer config={chartConfig} className="min-h-[200px] w-full bg-white rounded-xl border p-4">
       <BarChart accessibilityLayer data={chartData}>
@@ -46,10 +67,10 @@ export default function ChartData() {
           tickFormatter={(value) => value.slice(0, 3)}
         />
         <ChartTooltip content={<ChartTooltipContent />} />
-        <ChartLegend content={<ChartLegendContent/>} />
+        <ChartLegend content={<ChartLegendContent />} />
 
-        <Bar dataKey="tasks" fill="var(--color-tasks)" radius={4} />
+        <Bar dataKey="tasks" fill={chartConfig.tasks.color} radius={4} />
       </BarChart>
     </ChartContainer>
-  )
+  );
 }

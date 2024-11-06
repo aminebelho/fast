@@ -58,10 +58,13 @@ const HomePage = () => {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col items-center h-screen bg-green-200 p-16">
+      <div className="flex flex-col items-center h-[91vh] bg-green-200 p-4">
         {userEmail ? (
           <div className="">
-            <div className="flex space-x-4">
+            <div className="p-4 text-2xl font-bold">
+              Tableau de bord
+            </div>
+            <div className="flex">
               {statCardsData.map((data, index) => (
                 <StatCard key={index} title={data.title} value={data.value} />
               ))}
@@ -69,6 +72,9 @@ const HomePage = () => {
             <div className="flex">
               <div className="w-3/5 p-4 ">
               <ChartData />
+              </div>
+              <div className="w-2/5 p-4">
+              rfoed
               </div>
 
             </div>

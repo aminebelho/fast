@@ -10,10 +10,10 @@ import {
 const StatCard = ({ title, value }) => (
   <Card className="w-[250px] shadow-lg m-4">
     <CardHeader>
-      <CardTitle className="">{title}</CardTitle>
+      <CardTitle className="font-semibold mt-2">{title}</CardTitle>
     </CardHeader>
     <CardContent>
-      <p className="text-3xl font-semibold mt-2">{value}</p>
+      <p className="text-3xl font-bold mt-2">{value}</p>
     </CardContent>
   </Card>
 );
