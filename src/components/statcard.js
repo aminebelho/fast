@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/card'; // Adjust the import path as needed
 
 const StatCard = ({ title, value }) => (
-  <Card className="w-[250px] shadow-lg m-4">
+  <Card className="w-1/3 shadow-lg m-4">
     <CardHeader>
       <CardTitle className="font-semibold mt-2">{title}</CardTitle>
     </CardHeader>

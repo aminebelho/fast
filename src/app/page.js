@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "../components/navbar";
 import StatCard from "../components/statcard";
 import ChartData  from "../components/chartData";
+import LatestTasks from "../components/latestTasks"
 import axios from "../lib/axios";
 
 const HomePage = () => {
@@ -58,13 +59,13 @@ const HomePage = () => {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col items-center h-[91vh] bg-green-200 p-4">
+      <div className="flex flex-col items-center h-screen bg-[#00d084] p-4">
         {userEmail ? (
-          <div className="">
+          <div className="h-full">
             <div className="p-4 text-2xl font-bold">
               Tableau de bord
             </div>
-            <div className="flex">
+            <div className="flex justify-between">
               {statCardsData.map((data, index) => (
                 <StatCard key={index} title={data.title} value={data.value} />
               ))}
@@ -74,7 +75,7 @@ const HomePage = () => {
               <ChartData />
               </div>
               <div className="w-2/5 p-4">
-              rfoed
+              <LatestTasks />
               </div>
 
             </div>
