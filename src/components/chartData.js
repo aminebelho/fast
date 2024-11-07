@@ -15,7 +15,7 @@ import axios from "../lib/axios";
 const chartConfig = {
   tasks: {
     label: "Nombre de tâches",
-    color: "#2563eb",
+    color: "#10b981",
   }
 };
 

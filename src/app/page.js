@@ -59,7 +59,7 @@ const HomePage = () => {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col items-center h-screen bg-[#00d084] p-4">
+      <div className="flex flex-col items-center h-screen bg-[#a7f3d0] p-4">
         {userEmail ? (
           <div className="h-full">
             <div className="p-4 text-2xl font-bold">
