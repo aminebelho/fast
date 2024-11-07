@@ -71,6 +71,8 @@ const Tasks = () => {
 
   const [statusFilter, setStatusFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
+  const [sortField, setSortField] = useState("due_date"); 
+  const [sortDirection, setSortDirection] = useState("asc"); 
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -88,16 +90,29 @@ const Tasks = () => {
   // Filter tasks based on status and priority
   const filteredTasks = tasks.filter((task) => {
     const statusMatch =
-      !statusFilter || statusFilter === "all" || task.status === statusFilter; // Allow "all" to pass through
+      !statusFilter || statusFilter === "all" || task.status === statusFilter;
     const priorityMatch =
-      !priorityFilter ||
-      priorityFilter === "all" ||
-      task.priority === priorityFilter; // Allow "all" to pass through
+      !priorityFilter || priorityFilter === "all" || task.priority === priorityFilter;
     return statusMatch && priorityMatch;
   });
 
-  const totalPages = Math.ceil(filteredTasks.length / pageSize);
-  const paginatedTasks = filteredTasks.slice(
+  // Sort tasks by the selected field and direction
+  const sortTasks = (tasks) => {
+    return tasks.sort((a, b) => {
+      const fieldA = sortField === "due_date" ? new Date(a.due_date) : a.id;
+      const fieldB = sortField === "due_date" ? new Date(b.due_date) : b.id;
+
+      if (sortDirection === "asc") {
+        return fieldA > fieldB ? 1 : fieldA < fieldB ? -1 : 0;
+      } else {
+        return fieldA < fieldB ? 1 : fieldA > fieldB ? -1 : 0;
+      }
+    });
+  };
+
+  const filteredAndSortedTasks = sortTasks(filteredTasks);
+  const totalPages = Math.ceil(filteredAndSortedTasks.length / pageSize);
+  const paginatedTasks = filteredAndSortedTasks.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
@@ -191,10 +206,24 @@ const Tasks = () => {
                   <TableRow>
                     <TableHead className="w-1/12 p-4">Id</TableHead>
                     <TableHead className="w-3/12 p-4">Task</TableHead>
-                    <TableHead className="w-4/12 p-4">Description</TableHead>
+                    <TableHead className="w-3/12 p-4">Description</TableHead>
                     <TableHead className="w-1/12 p-4">Status</TableHead>
                     <TableHead className="w-1/12 p-4">Priority</TableHead>
-                    <TableHead className="w-1/12 p-4">Due Date</TableHead>
+                    <TableHead className="w-2/12 p-4">
+                      <button
+                        className="text-left"
+                        onClick={() => {
+                          setSortField("due_date");
+                          setSortDirection(
+                            sortDirection === "asc" ? "desc" : "asc"
+                          );
+                        }}
+                      >
+                        Due Date{" "}
+                        {sortField === "due_date" &&
+                          (sortDirection === "asc" ? "↑" : "↓")}
+                      </button>
+                    </TableHead>
                     <TableHead className="w-1/12 p-4">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
