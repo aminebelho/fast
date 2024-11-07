@@ -44,7 +44,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-[#a7f3d0]">
+    <div className="flex flex-col items-center justify-center h-screen bg-[#d1fae5]">
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Connexion</CardTitle>
@@ -78,7 +78,7 @@ const Login = () => {
           </form>
         </CardContent>
         <CardFooter className="flex justify-center">
-          <Button type="submit" onClick={handleLogin} className="w-full">
+          <Button type="submit" onClick={handleLogin} className="w-full bg-[#059669]">
             Se connecter
           </Button>
         </CardFooter>

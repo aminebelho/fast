@@ -1,8 +1,10 @@
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/react';
+import { PcCase ,CirclePlus, TableOfContents,  } from 'lucide-react';
 
 const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Team', href: '#', current: false },
+  { name: 'Dashboard', href: '/', current: true, icon: PcCase  },
+  { name: 'Vos tâches', href: 'tasks', current: false, icon: TableOfContents },
+  { name: 'Ajouter une tâche', href: 'addTask', current: false, icon: CirclePlus },
 ];
 
 function classNames(...classes) {
@@ -17,17 +19,15 @@ export default function Navbar() {
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="hidden sm:ml-6 sm:block">
               <div className="flex space-x-4">
-                {navigation.map((item) => (
+              {navigation.map((item) => (
                   <a
                     key={item.name}
                     href={item.href}
                     aria-current={item.current ? 'page' : undefined}
-                    className={classNames(
-                      item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                      'rounded-md px-3 py-2 text-sm font-medium',
-                    )}
+                    className="hover:bg-[#34d399] text-white rounded-md px-3 py-2 text-sm font-semibold flex items-center space-x-2"
                   >
-                    {item.name}
+                    {item.icon && <item.icon className="h-5 w-5" />}
+                    <span>{item.name}</span>
                   </a>
                 ))}
               </div>
@@ -45,8 +45,7 @@ export default function Navbar() {
                     className="h-8 w-8 rounded-full"
                   />
                 </MenuButton>
-              </div>
-              <MenuItems
+                <MenuItems
                 transition
                 className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[leave]:duration-75 data-[enter]:ease-out data-[leave]:ease-in"
               >
@@ -55,26 +54,11 @@ export default function Navbar() {
                     href="#"
                     className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
                   >
-                    Your Profile
-                  </a>
-                </MenuItem>
-                <MenuItem>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
-                  >
-                    Settings
-                  </a>
-                </MenuItem>
-                <MenuItem>
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
-                  >
-                    Sign out
+                    Déconnexion
                   </a>
                 </MenuItem>
               </MenuItems>
+              </div>
             </Menu>
           </div>
         </div>

@@ -64,7 +64,7 @@ const AddTask = () => {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col items-center h-max min-h-screen bg-[#a7f3d0] p-4">
+      <div className="flex flex-col items-center h-max min-h-screen bg-[#d1fae5] p-4">
         <Card className="w-5/6 shadow-lg m-6">
           <CardHeader>
             <CardTitle className="font-semibold text-center text-2xl font-bold p-2">
@@ -205,8 +205,8 @@ const AddTask = () => {
                         )}
                       />
                     </div>
-                    <div className="w-1/2 p-4 flex items-end">
-                      <Button type="submit">Ajouter la tâche</Button>
+                    <div className="w-1/2 p-4 flex justify-end items-end">
+                      <Button type="submit" className="w-1/3 bg-[#059669]">Ajouter la tâche</Button>
                     </div>
                   </div>
                 </form>

@@ -146,7 +146,7 @@ export function EditTaskAlert({ task, onConfirm, open, setOpen }) {
             </div>
 
             <DialogFooter>
-              <Button type="submit">Save changes</Button>
+              <Button type="submit" className="bg-[#059669]">Save changes</Button>
             </DialogFooter>
           </form>
         </FormProvider>
