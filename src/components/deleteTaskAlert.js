@@ -17,26 +17,26 @@ export function DeleteTaskAlert({ task, onConfirm }) {
   return (
       <AlertDialog>
           <AlertDialogTrigger asChild>
-              <Button variant="outline" className="text-red-500 w-full">
-                  <Trash2 /> Delete
+              <Button variant="outline" className="text-red-500 font-semibold w-full">
+                  <Trash2 /> Supprimer
               </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
               <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure you want to delete this task?</AlertDialogTitle>
+                  <AlertDialogTitle>Etes vous sûr de vouloir supprimer cette tâche?</AlertDialogTitle>
                   <div className="text-sm text-muted-foreground mt-2">
                       <div>Task: <strong>{task.title}</strong></div>
                       <div>Description: <em>{task.description}</em></div>
                   </div>
                   <AlertDialogDescription>
-                    This action cannot be undone.
+                    La suppression se fera instantanément.
                   </AlertDialogDescription>
                   
               </AlertDialogHeader>
               <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => onConfirm(task.id)}>
-                      Delete Task
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => onConfirm(task.id)} className="bg-red-600">
+                      Supprimer tâche
                   </AlertDialogAction>
               </AlertDialogFooter>
           </AlertDialogContent>
