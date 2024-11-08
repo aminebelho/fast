@@ -8,6 +8,8 @@ import ChartData from "../components/chartData";
 import LatestTasks from "../components/latestTasks";
 import axios from "../lib/axios";
 import Cookies from "js-cookie"; // Import js-cookie
+import { Loader } from "lucide-react"; 
+
 
 const HomePage = () => {
   const router = useRouter();
@@ -82,9 +84,9 @@ const HomePage = () => {
             </div>
           </div>
         ) : (
-          <div className="flex justify-center items-center h-screen bg-[#d1fae5]">
-            <div className="text-xl font-bold">Chargement...</div>
-          </div>
+          <div className="flex justify-center items-center h-screen">
+          <Loader className="animate-spin h-10 w-10 text-gray-500" />
+        </div>
         )}
       </div>
     </>

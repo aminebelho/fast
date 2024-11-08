@@ -33,8 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Cookies from "js-cookie"; // Import js-cookie
-import { useRouter } from "next/navigation";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   return (
@@ -65,12 +63,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 };
 
 const Tasks = () => {
-  const router = useRouter();
   const [tasks, setTasks] = useState([]);
   const [editingTask, setEditingTask] = useState(null);
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true); // Loading state
   const pageSize = 5;
 
   const [statusFilter, setStatusFilter] = useState("");
@@ -79,25 +75,19 @@ const Tasks = () => {
   const [sortDirection, setSortDirection] = useState("asc"); 
 
   useEffect(() => {
-    const token = Cookies.get("token"); // Get token from cookies
+    const fetchTasks = async () => {
+      try {
+        const response = await axios.get("/tasks");
+        setTasks(response.data);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
 
-    if (!token) {
-      router.push("/login"); // Redirect to login if no token
-    } else {
-      fetchTasks();
-      setLoading(false); // Set loading to false once token is verified
-    }
-  }, [router]);
+    fetchTasks();
+  }, []);
 
-  const fetchTasks = async () => {
-    try {
-      const response = await axios.get("/tasks");
-      setTasks(response.data);
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
-  };
-
+  // Filter tasks based on status and priority
   const filteredTasks = tasks.filter((task) => {
     const statusMatch =
       !statusFilter || statusFilter === "all" || task.status === statusFilter;
@@ -106,6 +96,7 @@ const Tasks = () => {
     return statusMatch && priorityMatch;
   });
 
+  // Sort tasks by the selected field and direction
   const sortTasks = (tasks) => {
     return tasks.sort((a, b) => {
       const fieldA = sortField === "due_date" ? new Date(a.due_date) : a.id;
@@ -160,14 +151,6 @@ const Tasks = () => {
       console.error("Error deleting task:", error);
     }
   };
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-[#d1fae5]">
-        <div className="text-xl font-bold">Chargement...</div>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -247,30 +230,42 @@ const Tasks = () => {
                 <TableBody>
                   {paginatedTasks.map((task) => (
                     <TableRow key={task.id}>
-                      <TableCell>{task.id}</TableCell>
-                      <TableCell>{task.name}</TableCell>
-                      <TableCell>{task.description}</TableCell>
-                      <TableCell>{task.status}</TableCell>
-                      <TableCell>{task.priority}</TableCell>
-                      <TableCell>
-                        {new Date(task.due_date).toLocaleDateString()}
+                      <TableCell className="font-bold p-4">{task.id}</TableCell>
+                      <TableCell className="font-bold p-4">
+                        {task.title}
                       </TableCell>
-                      <TableCell className="space-x-1 flex justify-center">
+                      <TableCell className="font-medium p-4">
+                        {task.description}
+                      </TableCell>
+                      <TableCell className="p-4">{task.status}</TableCell>
+                      <TableCell className="p-4">{task.priority}</TableCell>
+                      <TableCell className="p-4">
+                        {new Date(task.due_date).toLocaleDateString("fr-FR", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </TableCell>
+                      <TableCell className="p-4">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
+                            <Button variant="ghost" size="icon">
                               <Ellipsis className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEdit(task.id)}>
-                              <Pencil className="mr-2 h-4 w-4" />
+                            <DropdownMenuItem
+                              onClick={() => handleEdit(task.id)}
+                            >
+                              <Pencil />
                               Edit
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => deleteTask(task.id)}>
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
+                            <DropdownMenuItem asChild>
+                              <DeleteTaskAlert
+                                task={task}
+                                onConfirm={deleteTask}
+                              />
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -278,22 +273,34 @@ const Tasks = () => {
                     </TableRow>
                   ))}
                 </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell
+                      colSpan={7}
+                      className="text-center w-full p-4 font-bold"
+                    >
+                      Total Tasks: {filteredTasks.length}
+                    </TableCell>
+                  </TableRow>
+                </TableFooter>
               </Table>
+              {/* Pagination Controls */}
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
             </div>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
           </CardContent>
         </Card>
       </div>
+
       {editingTask && (
         <EditTaskAlert
           task={editingTask}
+          onConfirm={updateTask}
           open={open}
           setOpen={setOpen}
-          onEdit={(updatedTask) => updateTask(updatedTask)}
         />
       )}
     </>
@@ -301,3 +308,5 @@ const Tasks = () => {
 };
 
 export default Tasks;
+
+

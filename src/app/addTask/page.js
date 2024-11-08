@@ -1,17 +1,34 @@
 "use client"; // Ensure this directive is at the top
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import axios from "../../lib/axios";
 import Navbar from "../../components/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "../../lib/axios";
-import Cookies from "js-cookie"; // Import js-cookie
+import { AddTaskAlert } from "../../components/addTaskAlert"; // Import the AddTaskAlert component
+import Cookies from 'js-cookie';
+import { Loader } from "lucide-react"; 
 
 const formSchema = z.object({
   title: z
@@ -20,59 +37,64 @@ const formSchema = z.object({
   description: z
     .string()
     .min(1, { message: "Description must be at least 5 characters long" }),
+  priority: z.enum(["basse", "moyenne", "haute", "urgente"], {
+    message: "Select a valid priority",
+  }),
+  status: z.enum(["en cours", "terminé"], { message: "Select a valid status" }),
   due_date: z.string().nonempty({ message: "Due date is required" }),
 });
 
 const AddTask = () => {
-  const router = useRouter();
-  const [userEmail, setUserEmail] = useState("");
-  const [loading, setLoading] = useState(true); // Set loading state
-  const [taskData, setTaskData] = useState(null);
-
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
       description: "",
+      priority: "basse",
+      status: "en cours",
       due_date: "",
     },
   });
 
-  useEffect(() => {
-    const token = Cookies.get("token"); // Get token from cookies
-    const email = Cookies.get("userEmail"); // Get email from cookies
-    
-    console.log("Token in AddTask:", token); // Log token to check if it's present
-    console.log("User Email in AddTask:", email); // Log email to check if it's present
 
-    if (!token) {
-      router.push("/login"); // Redirect to login if no token
-    } else {
-      setUserEmail(email);
-      setLoading(false); // Set loading to false once token is verified
-    }
-  }, [router]);
+
+  const [taskData, setTaskData] = useState(null);
+  const [isAlertOpen, setAlertOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+
 
   const onSubmit = async (data) => {
-    setTaskData(data);
+    setTaskData(data); // Store form data in state
+    setAlertOpen(true); // Open the confirmation dialog
+  };
+
+  const handleConfirm = async (task) => {
     try {
-      const token = Cookies.get("token");
-      await axios.post("/tasks", data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post("/tasks", task); // Add the task to the server
       alert("Task added successfully!");
     } catch (error) {
-      console.error("Error adding task:", error);
+      console.error("Error submitting form:", error);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-[#d1fae5]">
-        <div className="text-xl font-bold">Chargement...</div>
-      </div>
-    ); // Display loading screen while checking login status
-  }
+  const router = useRouter();
+    // Client-side protection: Check for token
+    useEffect(() => {
+        const token = Cookies.get("token");
+        if (!token) {
+          router.push("/login");
+        } else {
+          setLoading(false); // Set loading to false once authenticated
+        }
+      }, []);
+    
+      if (loading) {
+        return (
+          <div className="flex justify-center items-center  bg-[#d1fae5] h-screen">
+            <Loader className="animate-spin h-10 w-10 text-gray-500" />
+          </div>
+        );
+      }
 
   return (
     <>
@@ -132,6 +154,70 @@ const AddTask = () => {
                     <div className="w-1/2 p-4">
                       <FormField
                         control={form.control}
+                        name="priority"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Priorité</FormLabel>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Choisir la priorité" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectItem value="basse">Basse</SelectItem>
+                                  <SelectItem value="moyenne">Moyenne</SelectItem>
+                                  <SelectItem value="haute">Haute</SelectItem>
+                                  <SelectItem value="urgente">Urgente</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                            {form.formState.errors.priority && (
+                              <FormMessage>
+                                {form.formState.errors.priority.message}
+                              </FormMessage>
+                            )}
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <div className="w-1/2 p-4">
+                      <FormField
+                        control={form.control}
+                        name="status"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Statut</FormLabel>
+                            <Select
+                              value={field.value}
+                              onValueChange={field.onChange}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Choisir le statut" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectGroup>
+                                  <SelectItem value="en cours">En cours</SelectItem>
+                                  <SelectItem value="terminé">Terminé</SelectItem>
+                                </SelectGroup>
+                              </SelectContent>
+                            </Select>
+                            {form.formState.errors.status && (
+                              <FormMessage>
+                                {form.formState.errors.status.message}
+                              </FormMessage>
+                            )}
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex">
+                    <div className="w-1/2 p-4">
+                      <FormField
+                        control={form.control}
                         name="due_date"
                         render={({ field }) => (
                           <FormItem>
@@ -160,6 +246,14 @@ const AddTask = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* AddTaskAlert Component for confirmation */}
+      <AddTaskAlert
+        task={taskData}
+        onConfirm={handleConfirm}
+        isOpen={isAlertOpen}
+        onClose={() => setAlertOpen(false)}
+      />
     </>
   );
 };
