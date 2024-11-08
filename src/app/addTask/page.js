@@ -25,6 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AddTaskAlert } from "../../components/addTaskAlert"; // Import the AddTaskAlert component
 
 const formSchema = z.object({
   title: z
@@ -52,9 +53,17 @@ const AddTask = () => {
     },
   });
 
+  const [taskData, setTaskData] = useState(null);
+  const [isAlertOpen, setAlertOpen] = useState(false);
+
   const onSubmit = async (data) => {
+    setTaskData(data); // Store form data in state
+    setAlertOpen(true); // Open the confirmation dialog
+  };
+
+  const handleConfirm = async (task) => {
     try {
-      await axios.post("/tasks", data); // Replace with your actual endpoint
+      await axios.post("/tasks", task); // Add the task to the server
       alert("Task added successfully!");
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -133,9 +142,7 @@ const AddTask = () => {
                               <SelectContent>
                                 <SelectGroup>
                                   <SelectItem value="basse">Basse</SelectItem>
-                                  <SelectItem value="moyenne">
-                                    Moyenne
-                                  </SelectItem>
+                                  <SelectItem value="moyenne">Moyenne</SelectItem>
                                   <SelectItem value="haute">Haute</SelectItem>
                                   <SelectItem value="urgente">Urgente</SelectItem>
                                 </SelectGroup>
@@ -166,12 +173,8 @@ const AddTask = () => {
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectGroup>
-                                  <SelectItem value="en cours">
-                                    En cours
-                                  </SelectItem>
-                                  <SelectItem value="terminé">
-                                    Terminé
-                                  </SelectItem>
+                                  <SelectItem value="en cours">En cours</SelectItem>
+                                  <SelectItem value="terminé">Terminé</SelectItem>
                                 </SelectGroup>
                               </SelectContent>
                             </Select>
@@ -206,7 +209,9 @@ const AddTask = () => {
                       />
                     </div>
                     <div className="w-1/2 p-4 flex justify-end items-end">
-                      <Button type="submit" className="w-1/3 bg-[#059669]">Ajouter la tâche</Button>
+                      <Button type="submit" className="w-1/3 bg-[#059669]">
+                        Ajouter la tâche
+                      </Button>
                     </div>
                   </div>
                 </form>
@@ -215,6 +220,14 @@ const AddTask = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* AddTaskAlert Component for confirmation */}
+      <AddTaskAlert
+        task={taskData}
+        onConfirm={handleConfirm}
+        isOpen={isAlertOpen}
+        onClose={() => setAlertOpen(false)}
+      />
     </>
   );
 };

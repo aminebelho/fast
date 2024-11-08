@@ -27,6 +27,9 @@ export function DeleteTaskAlert({ task, onConfirm }) {
                   <div className="text-sm text-muted-foreground mt-2">
                       <div>Task: <strong>{task.title}</strong></div>
                       <div>Description: <em>{task.description}</em></div>
+                      <div>status: <em>{task.status}</em></div>
+                      <div>priority: <em>{task.priority}</em></div>
+                      <div>due_date: <em>{task.due_date}</em></div>
                   </div>
                   <AlertDialogDescription>
                     La suppression se fera instantanément.

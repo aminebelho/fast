@@ -1,9 +1,9 @@
-// app/login/page.js
 "use client"; // Ensure this directive is at the top
 
 import { useState } from "react";
 import axios from "../../lib/axios";
 import { useRouter } from "next/navigation";
+import Cookies from 'js-cookie';
 
 // Importing UI components
 import {
@@ -26,20 +26,38 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    setError(null); // Clear any previous errors
-
+  
+    setError(null);
+  
     try {
+      // Sending login request
       const response = await axios.post("/login", { email, password });
-      localStorage.setItem("token", response.data.token);
-      localStorage.setItem("userEmail", email); // Store user email
+      const token = response.data.token;
+  
+      // Check if token is present and valid
+      if (token) {
+        // Save token in cookies
+        Cookies.set("token", token, { expires: 1 }); // Expires in 1 day
+        Cookies.set("userEmail", email, { expires: 1 }); // Optionally store email
 
-      // Redirect on successful login without refreshing the page
-      router.push("/"); // Navigate with Next.js router
+        // Log the token and email immediately after setting
+        console.log("Token saved in cookies:", Cookies.get("token"));
+        console.log("Email saved in cookies:", Cookies.get("userEmail"));
+  
+        // Check if token is set correctly in localStorage
+        localStorage.setItem("token", token); // Store token in localStorage as well
+        localStorage.setItem("userEmail", email); // Optionally store email in localStorage
+        console.log("Token saved in localStorage:", localStorage.getItem("token"));
+        console.log("Email saved in localStorage:", localStorage.getItem("userEmail"));
+
+        // Redirect to homepage after successful login
+        router.push("/");
+      } else {
+        setError("Invalid credentials. Please try again.");
+      }
     } catch (err) {
-      console.error("Error:", err); // Log the error for debugging
-      const errorMessage = err.response?.data?.message || "Une erreur s'est produite";
-      setError(errorMessage); // Set the error message
+      const errorMessage = err.response?.data?.message || "An error occurred. Please try again.";
+      setError(errorMessage);
     }
   };
 
