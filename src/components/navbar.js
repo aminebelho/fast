@@ -2,6 +2,7 @@ import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuIt
 import { PcCase, CirclePlus, TableOfContents } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie'; // Ensure you're using js-cookie if you want to access cookies
+import { useRouter } from 'next/navigation';
 
 const navigation = [
   { name: 'Dashboard', href: '/', current: true, icon: PcCase },
@@ -10,17 +11,29 @@ const navigation = [
 ];
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(' '); // Helper function to join class names
 }
 
 export default function Navbar() {
   const [userEmail, setUserEmail] = useState(null);
+  const router = useRouter();
 
   // Only access Cookies or localStorage after the component mounts on the client side
   useEffect(() => {
     const emailFromCookies = Cookies.get('userEmail') || localStorage.getItem('userEmail');
     setUserEmail(emailFromCookies);
   }, []);
+
+  const handleLogout = () => {
+    // Clear user data from cookies and localStorage
+    Cookies.remove('token');
+    Cookies.remove('userEmail');
+    localStorage.removeItem('token');
+    localStorage.removeItem('userEmail');
+
+    // Redirect to the login page
+    router.push('/login');
+  };
 
   if (!userEmail) {
     return null; // Return null or a loading state if the email is not yet available
@@ -68,6 +81,7 @@ export default function Navbar() {
                   <MenuItem>
                     <a
                       href="#"
+                      onClick={handleLogout} // Add the logout handler here
                       className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none"
                     >
                       Déconnexion

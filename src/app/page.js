@@ -26,7 +26,7 @@ const HomePage = () => {
   useEffect(() => {
     const token = Cookies.get("token"); // Get token from cookies
     const email = Cookies.get("userEmail"); // Get email from cookies
-    
+
     console.log("Token in HomePage:", token); // Log token to check if it's present
     console.log("User Email in HomePage:", email); // Log email to check if it's present
 
@@ -46,10 +46,14 @@ const HomePage = () => {
       const tasks = response.data;
       setTasksCount(response.data.length);
 
-      const enCoursTasksCount = tasks.filter((task) => task.status === "en cours").length;
+      const enCoursTasksCount = tasks.filter(
+        (task) => task.status === "en cours"
+      ).length;
       setTasksEnCoursCount(enCoursTasksCount);
 
-      const terminesTasksCount = tasks.filter((task) => task.status === "terminé").length;
+      const terminesTasksCount = tasks.filter(
+        (task) => task.status === "terminé"
+      ).length;
       setTasksTerminesCount(terminesTasksCount);
     } catch (error) {
       console.error("Failed to fetch tasks:", error);
@@ -78,7 +82,9 @@ const HomePage = () => {
             </div>
           </div>
         ) : (
-          <div>Chargement...</div>
+          <div className="flex justify-center items-center h-screen bg-[#d1fae5]">
+            <div className="text-xl font-bold">Chargement...</div>
+          </div>
         )}
       </div>
     </>
