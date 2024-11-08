@@ -5,6 +5,7 @@ import axios from "../../lib/axios";
 import { EditTaskAlert } from "../../components/editTaskAlert";
 import { DeleteTaskAlert } from "../../components/deleteTaskAlert";
 import Navbar from "../../components/navbar";
+import { Loader }  from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -33,6 +34,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   return (
@@ -67,6 +70,7 @@ const Tasks = () => {
   const [editingTask, setEditingTask] = useState(null);
   const [open, setOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true); 
   const pageSize = 5;
 
   const [statusFilter, setStatusFilter] = useState("");
@@ -74,18 +78,39 @@ const Tasks = () => {
   const [sortField, setSortField] = useState("due_date"); 
   const [sortDirection, setSortDirection] = useState("asc"); 
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await axios.get("/tasks");
-        setTasks(response.data);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      }
-    };
+  const router = useRouter();
 
-    fetchTasks();
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (!token) {
+      router.push("/login");
+    } else {
+      setLoading(false); // Set loading to false once authenticated
+    }
   }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      const fetchTasks = async () => {
+        try {
+          const response = await axios.get("/tasks");
+          setTasks(response.data);
+        } catch (error) {
+          console.error("Error fetching tasks:", error);
+        }
+      };
+      fetchTasks();
+    }
+  }, [loading]);
+
+  // Show loader if still loading
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-[#d1fae5]">
+        <Loader className="animate-spin h-10 w-10 text-gray-500" />
+      </div>
+    );
+  }
 
   // Filter tasks based on status and priority
   const filteredTasks = tasks.filter((task) => {
@@ -258,7 +283,7 @@ const Tasks = () => {
                               onClick={() => handleEdit(task.id)}
                             >
                               <Pencil />
-                              Edit
+                              Modifier
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem asChild>
